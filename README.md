@@ -1,12 +1,13 @@
 # user_agent
-Dart user agent detection library. Uses the code from both `dart:html`
-and `package:r2d2`.
+Simple Dart user agent detection library.
 
 Runs anywhere.
 
+Incorporates some code from the old `package:r2d2`.
+
 ```dart
 main() async {
-    app.before.add('*', (req, res) async {
+    app.get('/', (req, res) async {
         var ua = new UserAgent(req.headers.value('user-agent'));
 
         if (ua.isChrome) {

@@ -1,12 +1,9 @@
 library user_agent;
 
-import 'package:r2d2/r2d2_common.dart' as r2;
-import 'package:r2d2/r2d2_server.dart' as r2;
-
 /**
  * Utils for device detection.
  */
-class UserAgent extends r2.DeviceFace {
+class UserAgent {
   bool _isChrome;
   bool _isOpera;
   bool _isIE;
@@ -15,28 +12,173 @@ class UserAgent extends r2.DeviceFace {
   String _cachedCssPrefix;
   String _cachedPropertyPrefix;
 
-  final String _userAgent;
+  final String value, _lowerValue;
 
-  String userAgent() => _userAgent;
+  static const List<String> knownMobileUserAgentPrefixes = const [
+    "w3c ",
+    "w3c-",
+    "acs-",
+    "alav",
+    "alca",
+    "amoi",
+    "audi",
+    "avan",
+    "benq",
+    "bird",
+    "blac",
+    "blaz",
+    "brew",
+    "cell",
+    "cldc",
+    "cmd-",
+    "dang",
+    "doco",
+    "eric",
+    "hipt",
+    "htc_",
+    "inno",
+    "ipaq",
+    "ipod",
+    "jigs",
+    "kddi",
+    "keji",
+    "leno",
+    "lg-c",
+    "lg-d",
+    "lg-g",
+    "lge-",
+    "lg/u",
+    "maui",
+    "maxo",
+    "midp",
+    "mits",
+    "mmef",
+    "mobi",
+    "mot-",
+    "moto",
+    "mwbp",
+    "nec-",
+    "newt",
+    "noki",
+    "palm",
+    "pana",
+    "pant",
+    "phil",
+    "play",
+    "port",
+    "prox",
+    "qwap",
+    "sage",
+    "sams",
+    "sany",
+    "sch-",
+    "sec-",
+    "send",
+    "seri",
+    "sgh-",
+    "shar",
+    "sie-",
+    "siem",
+    "smal",
+    "smar",
+    "sony",
+    "sph-",
+    "symb",
+    "t-mo",
+    "teli",
+    "tim-",
+    "tosh",
+    "tsm-",
+    "upg1",
+    "upsi",
+    "vk-v",
+    "voda",
+    "wap-",
+    "wapa",
+    "wapi",
+    "wapp",
+    "wapr",
+    "webc",
+    "winw",
+    "winw",
+    "xda ",
+    "xda-"
+  ];
 
-  UserAgent(this._userAgent, {Map headers: const {}}) {
-    init(_userAgent, headers ?? {});
-  }
+  static const List<String> knownMobileUserAgentKeywords = const [
+    "blackberry",
+    "webos",
+    "ipod",
+    "lge vx",
+    "midp",
+    "maemo",
+    "mmp",
+    "mobile",
+    "netfront",
+    "hiptop",
+    "nintendo DS",
+    "novarra",
+    "openweb",
+    "opera mobi",
+    "opera mini",
+    "palm",
+    "psp",
+    "phone",
+    "smartphone",
+    "symbian",
+    "up.browser",
+    "up.link",
+    "wap",
+    "windows ce"
+  ];
+
+  static const List<String> knownTabletUserAgentKeywords = const [
+    "ipad",
+    "playbook",
+    "hp-tablet",
+    "kindle"
+  ];
+
+  UserAgent(this.value) : _lowerValue = value.toLowerCase();
 
   /// Determines if the user agent string contains the desired string. Case-insensitive.
-  bool find(String needle) =>
-      userAgent().toString().contains(needle.toLowerCase());
+  bool contains(String needle) => _lowerValue.contains(needle.toLowerCase());
 
-  bool mac() => find('Macintosh') || find('Mac OS X');
+  bool get isDesktop => isMacOS || (!isMobile && !isTablet);
 
-  bool get isSafari => find('Safari');
+  bool get isTablet => knownTabletUserAgentKeywords.any(contains);
+
+  bool get isMobile => knownMobileUserAgentKeywords.any(contains);
+
+  bool get isMacOS => contains('Macintosh') || contains('Mac OS X');
+
+  bool get isSafari => contains('Safari');
+
+  bool get isAndroid => contains('android');
+
+  bool get isAndroidPhone => contains('android') && contains('mobile');
+
+  bool get isAndroidTablet => contains('android') && !contains('mobile');
+
+  bool get isWindows => contains('windows');
+
+  bool get isWindowsPhone => isWindows && contains('phone');
+
+  bool get isWindowsTablet => isWindows && contains('touch');
+
+  bool get isBlackberry =>
+      contains('blackberry') || contains('bb10') || contains('rim');
+
+  bool get isBlackberryPhone => isBlackberry && !contains('tablet');
+
+  bool get isBlackberryTablet => isBlackberry && contains('tablet');
 
   /**
    * Determines if the current device is running Chrome.
    */
   bool get isChrome {
     if (_isChrome == null) {
-      _isChrome = _userAgent.contains("Chrome", 0);
+      _isChrome = value.contains("Chrome", 0);
     }
     return _isChrome;
   }
@@ -46,7 +188,7 @@ class UserAgent extends r2.DeviceFace {
    */
   bool get isOpera {
     if (_isOpera == null) {
-      _isOpera = _userAgent.contains("Opera", 0);
+      _isOpera = value.contains("Opera", 0);
     }
     return _isOpera;
   }
@@ -56,7 +198,7 @@ class UserAgent extends r2.DeviceFace {
    */
   bool get isIE {
     if (_isIE == null) {
-      _isIE = !isOpera && _userAgent.contains("Trident/", 0);
+      _isIE = !isOpera && value.contains("Trident/", 0);
     }
     return _isIE;
   }
@@ -66,7 +208,7 @@ class UserAgent extends r2.DeviceFace {
    */
   bool get isFirefox {
     if (_isFirefox == null) {
-      _isFirefox = _userAgent.contains("Firefox", 0);
+      _isFirefox = value.contains("Firefox", 0);
     }
     return _isFirefox;
   }
@@ -76,7 +218,7 @@ class UserAgent extends r2.DeviceFace {
    */
   bool get isWebKit {
     if (_isWebKit == null) {
-      _isWebKit = !isOpera && _userAgent.contains("WebKit", 0);
+      _isWebKit = !isOpera && value.contains("WebKit", 0);
     }
     return _isWebKit;
   }
