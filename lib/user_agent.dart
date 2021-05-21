@@ -4,13 +4,13 @@ library user_agent;
  * Utils for device detection.
  */
 class UserAgent {
-  bool _isChrome;
-  bool _isOpera;
-  bool _isIE;
-  bool _isFirefox;
-  bool _isWebKit;
-  String _cachedCssPrefix;
-  String _cachedPropertyPrefix;
+  bool? _isChrome;
+  bool? _isOpera;
+  bool? _isIE;
+  bool? _isFirefox;
+  bool? _isWebKit;
+  String? _cachedCssPrefix;
+  String? _cachedPropertyPrefix;
 
   final String value, _lowerValue;
 
@@ -180,7 +180,7 @@ class UserAgent {
     if (_isChrome == null) {
       _isChrome = value.contains("Chrome", 0);
     }
-    return _isChrome;
+    return _isChrome!;
   }
 
   /**
@@ -190,7 +190,7 @@ class UserAgent {
     if (_isOpera == null) {
       _isOpera = value.contains("Opera", 0);
     }
-    return _isOpera;
+    return _isOpera!;
   }
 
   /**
@@ -200,7 +200,7 @@ class UserAgent {
     if (_isIE == null) {
       _isIE = !isOpera && value.contains("Trident/", 0);
     }
-    return _isIE;
+    return _isIE!;
   }
 
   /**
@@ -210,7 +210,7 @@ class UserAgent {
     if (_isFirefox == null) {
       _isFirefox = value.contains("Firefox", 0);
     }
-    return _isFirefox;
+    return _isFirefox!;
   }
 
   /**
@@ -220,14 +220,14 @@ class UserAgent {
     if (_isWebKit == null) {
       _isWebKit = !isOpera && value.contains("WebKit", 0);
     }
-    return _isWebKit;
+    return _isWebKit!;
   }
 
   /**
    * Gets the CSS property prefix for the current platform.
    */
   String get cssPrefix {
-    String prefix = _cachedCssPrefix;
+    String? prefix = _cachedCssPrefix;
     if (prefix != null) return prefix;
     if (isFirefox) {
       prefix = '-moz-';
@@ -245,7 +245,7 @@ class UserAgent {
    * Prefix as used for JS property names.
    */
   String get propertyPrefix {
-    String prefix = _cachedPropertyPrefix;
+    String? prefix = _cachedPropertyPrefix;
     if (prefix != null) return prefix;
     if (isFirefox) {
       prefix = 'moz';
