@@ -1,7 +1,6 @@
 name: user_agent
 description: A Dart user agent detection library.
-version: 2.0.0
-author: Tobe O <thosakwe@gmail.com>
+version: 2.0.0+1
 homepage: https://github.com/thosakwe/user_agent
 environment:
   sdk: '>=2.12.0 <3.0.0'
